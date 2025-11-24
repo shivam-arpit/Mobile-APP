@@ -12,7 +12,7 @@ function showScreen(id){
   document.getElementById(id).style.display='block';
 }
 
-// --- Sample shop data (we will use your uploaded screenshots visually)
+// --- Sample shop data ---
 const shops = [
   {
     id: 'SH-398',
@@ -94,12 +94,62 @@ function renderList(filter=''){
 }
 
 document.getElementById('searchInput').addEventListener('input', (e)=> renderList(e.target.value));
-// initial render
 renderList();
 
-// --- Service Worker registration for PWA offline caching ---
+// --- PWA Installation Handler ---
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('PWA install prompt triggered');
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // Show install button after 5 seconds
+  setTimeout(showInstallPrompt, 5000);
+});
+
+function showInstallPrompt() {
+  if (!deferredPrompt) return;
+  
+  const installBtn = document.createElement('button');
+  installBtn.innerHTML = '📱 Install App';
+  installBtn.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #385f8c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 10000;
+    cursor: pointer;
+  `;
+  
+  installBtn.onclick = async () => {
+    if (!deferredPrompt) return;
+    
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User installed the PWA');
+    }
+    
+    deferredPrompt = null;
+    installBtn.remove();
+  };
+  
+  document.body.appendChild(installBtn);
+}
+
+// --- Service Worker registration ---
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('service-worker.js').then(()=>{
-    console.log('SW registered');
-  }).catch(e=>console.warn('SW failed',e));
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log('SW registered successfully'))
+    .catch(e => console.warn('SW registration failed:', e));
 }
