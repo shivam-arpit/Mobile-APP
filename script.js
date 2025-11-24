@@ -122,7 +122,7 @@ window.addEventListener('appinstalled', (evt) => {
 // --- Service Worker Registration ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    const swUrl = 'service-worker.js';
+    const swUrl = 'serviece-worker.js';
     console.log('Registering Service Worker:', swUrl);
     
     navigator.serviceWorker.register(swUrl)
@@ -151,3 +151,4 @@ if (manifestLink) {
 } else {
   console.log('❌ No manifest found');
 }
+
