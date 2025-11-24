@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Shop PWA - Demo</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f7f8fb">
+
+  <!-- iOS support hints -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="./assets/home.png">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="mobile-frame" id="app">
+
+    <!-- HOME SCREEN -->
+    <div id="home" class="screen">
+      <div class="top-card">
+        <div class="top-row">
+          <div class="avatar"><img src="./assets/home.png" alt="avatar"></div>
+          <div>
+            <h1>Welcome, Admin!</h1>
+            <div class="small">&nbsp;</div>
+          </div>
+          <div class="bell">🔔</div>
+        </div>
+        <div class="center-title">Today's Tasks</div>
+        <div class="sub-muted">You don't have any tasks assigned for today</div>
+      </div>
+
+      <div class="grid">
+        <div class="tile" data-screen="new-visit">
+          <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2" ry="2"></rect><path d="M3 10h18"></path></svg>
+          <p>New Shop Visit</p>
+        </div>
+        <div class="tile" data-screen="shop-dashboard">
+          <svg viewBox="0 0 24 24"><path d="M3 7h18v13H3z"></path><path d="M7 7V4h10v3"></path></svg>
+          <p>Shop Dashboard</p>
+        </div>
+        <div class="tile" data-screen="shop-task">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16v12H4z"></path><path d="M8 11h8"></path></svg>
+          <p>Shop Task</p>
+        </div>
+        <div class="tile" data-screen="shop-complaint">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"></circle><path d="M12 13v4"></path></svg>
+          <p>Shop Complaint</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SHOP DASHBOARD SCREEN -->
+    <div id="shop-dashboard" class="screen" style="display:none">
+      <div class="backbar">
+        <button id="backBtn">←</button>
+        <h2>Shop Dashboard</h2>
+        <div style="margin-left:auto">🔍</div>
+      </div>
+
+      <div class="search-wrap">
+        <div class="search"><input id="searchInput" placeholder="Search here..."></div>
+      </div>
+
+      <div class="list" id="shopList">
+        <!-- cards will be injected here from JS -->
+      </div>
+
+    </div>
+
+    <div class="safe"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
