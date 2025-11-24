@@ -1,3 +1,7 @@
+// Debug info
+console.log('PWA Script loaded');
+console.log('Window location:', window.location.href);
+
 // --- Simple navigation ---
 document.querySelectorAll('.tile').forEach(t=>{
   t.addEventListener('click', ()=>{
@@ -22,24 +26,6 @@ const shops = [
     pincode: '411045',
     address: '3 Baner road',
     lastVisited: '17 Nov 2025 @ 04:47 PM'
-  },
-  {
-    id: 'SH-397',
-    name: 'vijay sales',
-    owner: 'rahul',
-    phone: '7276791913',
-    pincode: '440024',
-    address: 'nagpur',
-    lastVisited: '19 Nov 2025 @ 12:35 PM'
-  },
-  {
-    id: 'SH-396',
-    name: 'rahul',
-    owner: 'rahul',
-    phone: 'N/A',
-    pincode: 'N/A',
-    address: 'N/A',
-    lastVisited: '—'
   }
 ];
 
@@ -66,9 +52,7 @@ function renderList(filter=''){
               <div class="value">${s.owner}</div>
             </div>
           </div>
-
           <div style="height:10px"></div>
-
           <div class="meta">
             <div>
               <div class="label">Contact Number</div>
@@ -79,11 +63,9 @@ function renderList(filter=''){
               <div class="value">${s.pincode}</div>
             </div>
           </div>
-
           <div style="height:8px"></div>
           <div class="label">Shop Address</div>
           <div class="value">${s.address}</div>
-
           <div style="height:10px"></div>
           <div class="small">Last Visited At<br>${s.lastVisited}</div>
         </div>
@@ -96,60 +78,76 @@ function renderList(filter=''){
 document.getElementById('searchInput').addEventListener('input', (e)=> renderList(e.target.value));
 renderList();
 
-// --- PWA Installation Handler ---
+// --- PWA Installation ---
 let deferredPrompt;
+const installButton = document.getElementById('installButton');
 
+// Listen for beforeinstallprompt event
 window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('PWA install prompt triggered');
+  console.log('🎉 beforeinstallprompt event fired!');
   e.preventDefault();
   deferredPrompt = e;
   
-  // Show install button after 5 seconds
-  setTimeout(showInstallPrompt, 5000);
+  // Show install button
+  installButton.style.display = 'block';
+  
+  // Log for debugging
+  console.log('PWA is installable! Install button shown.');
 });
 
-function showInstallPrompt() {
-  if (!deferredPrompt) return;
+// Install button click handler
+installButton.addEventListener('click', async () => {
+  if (!deferredPrompt) {
+    console.log('No deferred prompt available');
+    return;
+  }
   
-  const installBtn = document.createElement('button');
-  installBtn.innerHTML = '📱 Install App';
-  installBtn.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #385f8c;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 10000;
-    cursor: pointer;
-  `;
+  console.log('Showing install prompt...');
+  deferredPrompt.prompt();
   
-  installBtn.onclick = async () => {
-    if (!deferredPrompt) return;
-    
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      console.log('User installed the PWA');
-    }
-    
-    deferredPrompt = null;
-    installBtn.remove();
-  };
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log(`User response: ${outcome}`);
   
-  document.body.appendChild(installBtn);
+  deferredPrompt = null;
+  installButton.style.display = 'none';
+});
+
+// Listen for app installed event
+window.addEventListener('appinstalled', (evt) => {
+  console.log('🏆 PWA was installed successfully!');
+  installButton.style.display = 'none';
+  deferredPrompt = null;
+});
+
+// --- Service Worker Registration ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    const swUrl = 'service-worker.js';
+    console.log('Registering Service Worker:', swUrl);
+    
+    navigator.serviceWorker.register(swUrl)
+      .then((registration) => {
+        console.log('✅ Service Worker registered successfully:', registration);
+        
+        // Check if controlled
+        if (navigator.serviceWorker.controller) {
+          console.log('✅ Page is controlled by Service Worker');
+        } else {
+          console.log('❌ Page is not controlled by Service Worker');
+        }
+      })
+      .catch((error) => {
+        console.log('❌ Service Worker registration failed:', error);
+      });
+  });
+} else {
+  console.log('❌ Service Worker not supported in this browser');
 }
 
-// --- Service Worker registration ---
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./service-worker.js')
-    .then(() => console.log('SW registered successfully'))
-    .catch(e => console.warn('SW registration failed:', e));
+// Check manifest
+const manifestLink = document.querySelector('link[rel="manifest"]');
+if (manifestLink) {
+  console.log('✅ Manifest found:', manifestLink.href);
+} else {
+  console.log('❌ No manifest found');
 }
